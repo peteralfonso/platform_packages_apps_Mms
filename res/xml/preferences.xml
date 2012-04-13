@@ -42,6 +42,10 @@
   </PreferenceCategory>
   <PreferenceCategory android:title="@string/pref_sms_settings_title"
                       android:key="pref_key_sms_settings" >
+    <CheckBoxPreference android:key="pref_key_enable_emojis"
+                        android:title="@string/pref_title_enable_emojis"
+                        android:summary="@string/pref_summary_enable_emojis"
+                        android:defaultValue="false" />
     <CheckBoxPreference android:defaultValue="false"
                       android:key="pref_key_sms_delivery_reports"
                       android:summary="@string/pref_summary_sms_delivery_reports"
