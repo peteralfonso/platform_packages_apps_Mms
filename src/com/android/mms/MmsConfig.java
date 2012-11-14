@@ -21,11 +21,11 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.android.internal.telephony.TelephonyProperties;
-
 import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.util.Log;
+
+import com.android.internal.telephony.TelephonyProperties;
 
 public class MmsConfig {
     private static final String TAG = "MmsConfig";
@@ -94,6 +94,12 @@ public class MmsConfig {
 
     private static int mMaxSubjectLength = 40;  // maximum number of characters allowed for mms
                                                 // subject
+
+    // If mEnableGroupMms is true, a message with multiple recipients, regardless of contents,
+    // will be sent as a single MMS message with multiple "TO" fields set for each recipient.
+    // If mEnableGroupMms is false, the group MMS setting/preference will be hidden in the settings
+    // activity.
+    private static boolean mEnableGroupMms = true;
 
     public static void init(Context context) {
         if (LOCAL_LOGV) {
@@ -242,6 +248,10 @@ public class MmsConfig {
         return mMaxSubjectLength;
     }
 
+    public static boolean getGroupMmsEnabled() {
+        return mEnableGroupMms;
+    }
+
     public static final void beginDocument(XmlPullParser parser, String firstElementName) throws XmlPullParserException, IOException
     {
         int type;
@@ -315,6 +325,8 @@ public class MmsConfig {
                             mEnableSMSDeliveryReports = "true".equalsIgnoreCase(text);
                         } else if ("enableMMSDeliveryReports".equalsIgnoreCase(value)) {
                             mEnableMMSDeliveryReports = "true".equalsIgnoreCase(text);
+                        } else if ("enableGroupMms".equalsIgnoreCase(value)) {
+                            mEnableGroupMms = "true".equalsIgnoreCase(text);
                         }
                     } else if ("int".equals(tag)) {
                         // int config tags go here

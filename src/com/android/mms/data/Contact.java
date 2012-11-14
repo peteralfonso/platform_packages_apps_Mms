@@ -13,6 +13,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.database.sqlite.SqliteWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -20,22 +21,21 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.Presence;
-import android.provider.ContactsContract.CommonDataKinds.Email;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Profile;
 import android.provider.Telephony.Mms;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
 
-import android.database.sqlite.SqliteWrapper;
-import com.android.mms.ui.MessageUtils;
 import com.android.mms.LogTag;
 import com.android.mms.MmsApp;
 import com.android.mms.R;
+import com.android.mms.ui.MessageUtils;
 
 public class Contact {
     public static final int CONTACT_METHOD_TYPE_UNKNOWN = 0;
@@ -134,7 +134,7 @@ public class Contact {
                 mContactMethodId);
     }
 
-    private static void logWithTrace(String msg, Object... format) {
+    public static void logWithTrace(String tag, String msg, Object... format) {
         Thread current = Thread.currentThread();
         StackTraceElement[] stack = current.getStackTrace();
 
@@ -154,7 +154,7 @@ public class Contact {
             }
         }
 
-        Log.d(TAG, sb.toString());
+        Log.d(tag, sb.toString());
     }
 
     public static Contact get(String number, boolean canBlock) {
@@ -542,7 +542,7 @@ public class Contact {
 
         private Contact get(String number, boolean isMe, boolean canBlock) {
             if (Log.isLoggable(LogTag.CONTACT, Log.DEBUG)) {
-                logWithTrace("get(%s, %s, %s)", number, isMe, canBlock);
+                logWithTrace(TAG, "get(%s, %s, %s)", number, isMe, canBlock);
             }
 
             if (TextUtils.isEmpty(number)) {

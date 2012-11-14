@@ -25,8 +25,21 @@ import static com.google.android.mms.pdu.PduHeaders.STATUS_DEFERRED;
 import static com.google.android.mms.pdu.PduHeaders.STATUS_RETRIEVED;
 import static com.google.android.mms.pdu.PduHeaders.STATUS_UNRECOGNIZED;
 
+import java.io.IOException;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SqliteWrapper;
+import android.net.Uri;
+import android.provider.Telephony.Mms;
+import android.provider.Telephony.Threads;
+import android.provider.Telephony.Mms.Inbox;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+
 import com.android.mms.MmsApp;
 import com.android.mms.MmsConfig;
+import com.android.mms.ui.MessagingPreferenceActivity;
 import com.android.mms.util.DownloadManager;
 import com.android.mms.util.Recycler;
 import com.android.mms.widget.MmsWidgetProvider;
@@ -38,18 +51,6 @@ import com.google.android.mms.pdu.PduComposer;
 import com.google.android.mms.pdu.PduHeaders;
 import com.google.android.mms.pdu.PduParser;
 import com.google.android.mms.pdu.PduPersister;
-import android.database.sqlite.SqliteWrapper;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.Telephony.Mms;
-import android.provider.Telephony.Mms.Inbox;
-import android.telephony.TelephonyManager;
-import android.util.Log;
-
-import java.io.IOException;
 
 /**
  * The NotificationTransaction is responsible for handling multimedia
@@ -107,8 +108,11 @@ public class NotificationTransaction extends Transaction implements Runnable {
         super(context, serviceId, connectionSettings);
 
         try {
+            // Save the pdu. If we can start downloading the real pdu immediately, don't allow
+            // persist() to create a thread for the notificationInd because it causes UI jank.
             mUri = PduPersister.getPduPersister(context).persist(
-                        ind, Inbox.CONTENT_URI);
+                        ind, Inbox.CONTENT_URI, !allowAutoDownload(),
+                        MessagingPreferenceActivity.getIsGroupMmsEnabled(context), null);
         } catch (MmsException e) {
             Log.e(TAG, "Failed to save NotificationInd in constructor.", e);
             throw new IllegalArgumentException();
@@ -127,11 +131,17 @@ public class NotificationTransaction extends Transaction implements Runnable {
         new Thread(this, "NotificationTransaction").start();
     }
 
-    public void run() {
+    public static boolean allowAutoDownload() {
         DownloadManager downloadManager = DownloadManager.getInstance();
         boolean autoDownload = downloadManager.isAuto();
         boolean dataSuspended = (MmsApp.getApplication().getTelephonyManager().getDataState() ==
                 TelephonyManager.DATA_SUSPENDED);
+        return autoDownload && !dataSuspended;
+    }
+
+    public void run() {
+        DownloadManager downloadManager = DownloadManager.getInstance();
+        boolean autoDownload = allowAutoDownload();
         try {
             if (LOCAL_LOGV) {
                 Log.v(TAG, "Notification transaction launched: " + this);
@@ -142,7 +152,7 @@ public class NotificationTransaction extends Transaction implements Runnable {
             // download a MM immediately.
             int status = STATUS_DEFERRED;
             // Don't try to download when data is suspended, as it will fail, so defer download
-            if (!autoDownload || dataSuspended) {
+            if (!autoDownload) {
                 downloadManager.markState(mUri, DownloadManager.STATE_UNSTARTED);
                 sendNotifyRespInd(status);
                 return;
@@ -173,7 +183,8 @@ public class NotificationTransaction extends Transaction implements Runnable {
                 } else {
                     // Save the received PDU (must be a M-RETRIEVE.CONF).
                     PduPersister p = PduPersister.getPduPersister(mContext);
-                    Uri uri = p.persist(pdu, Inbox.CONTENT_URI);
+                    Uri uri = p.persist(pdu, Inbox.CONTENT_URI, true,
+                            MessagingPreferenceActivity.getIsGroupMmsEnabled(mContext), null);
 
                     // Use local time instead of PDU time
                     ContentValues values = new ContentValues(1);
@@ -185,6 +196,11 @@ public class NotificationTransaction extends Transaction implements Runnable {
                     // M-NotifyResp.ind from Inbox.
                     SqliteWrapper.delete(mContext, mContext.getContentResolver(),
                                          mUri, null, null);
+                    Log.v(TAG, "NotificationTransaction received new mms message: " + uri);
+                    // Delete obsolete threads
+                    SqliteWrapper.delete(mContext, mContext.getContentResolver(),
+                            Threads.OBSOLETE_THREADS_URI, null, null);
+
                     // Notify observers with newly received MM.
                     mUri = uri;
                     status = STATUS_RETRIEVED;
@@ -217,7 +233,7 @@ public class NotificationTransaction extends Transaction implements Runnable {
             Log.e(TAG, Log.getStackTraceString(t));
         } finally {
             mTransactionState.setContentUri(mUri);
-            if (!autoDownload || dataSuspended) {
+            if (!autoDownload) {
                 // Always mark the transaction successful for deferred
                 // download since any error here doesn't make sense.
                 mTransactionState.setState(SUCCESS);

@@ -17,10 +17,6 @@
 
 package com.android.mms.ui;
 
-import com.android.mms.MmsApp;
-import com.android.mms.MmsConfig;
-import com.android.mms.R;
-
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -32,15 +28,20 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.provider.SearchRecentSuggestions;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.android.mms.MmsApp;
+import com.android.mms.MmsConfig;
+import com.android.mms.R;
+import com.android.mms.transaction.TransactionService;
 import com.android.mms.util.Recycler;
 
 /**
@@ -63,6 +64,7 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     public static final String RETRIEVAL_DURING_ROAMING = "pref_key_mms_retrieval_during_roaming";
     public static final String AUTO_DELETE              = "pref_key_auto_delete";
     public static final String ENABLE_EMOJIS = "pref_key_enable_emojis";
+    public static final String GROUP_MMS_MODE           = "pref_key_mms_group_mms";
 
     // Menu entries
     private static final int MENU_RESTORE_DEFAULTS    = 1;
@@ -71,11 +73,13 @@ public class MessagingPreferenceActivity extends PreferenceActivity
     private Preference mSmsDeliveryReportPref;
     private Preference mMmsLimitPref;
     private Preference mMmsDeliveryReportPref;
+    private Preference mMmsGroupMmsPref;
     private Preference mMmsReadReportPref;
     private Preference mManageSimPref;
     private Preference mClearHistoryPref;
     private ListPreference mVibrateWhenPref;
     private CheckBoxPreference mEnableNotificationsPref;
+    private CheckBoxPreference mMmsAutoRetrievialPref;
     private Recycler mSmsRecycler;
     private Recycler mMmsRecycler;
     private static final int CONFIRM_CLEAR_SEARCH_HISTORY_DIALOG = 3;
@@ -109,10 +113,12 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         mSmsLimitPref = findPreference("pref_key_sms_delete_limit");
         mSmsDeliveryReportPref = findPreference("pref_key_sms_delivery_reports");
         mMmsDeliveryReportPref = findPreference("pref_key_mms_delivery_reports");
+        mMmsGroupMmsPref = findPreference("pref_key_mms_group_mms");
         mMmsReadReportPref = findPreference("pref_key_mms_read_reports");
         mMmsLimitPref = findPreference("pref_key_mms_delete_limit");
         mClearHistoryPref = findPreference("pref_key_mms_clear_history");
         mEnableNotificationsPref = (CheckBoxPreference) findPreference(NOTIFICATION_ENABLED);
+        mMmsAutoRetrievialPref = (CheckBoxPreference) findPreference(AUTO_RETRIEVAL);
         mVibrateWhenPref = (ListPreference) findPreference(NOTIFICATION_VIBRATE_WHEN);
 
         mVibrateEntries = getResources().getTextArray(R.array.prefEntries_vibrateWhen);
@@ -162,15 +168,18 @@ public class MessagingPreferenceActivity extends PreferenceActivity
                 (PreferenceCategory)findPreference("pref_key_storage_settings");
             storageOptions.removePreference(findPreference("pref_key_mms_delete_limit"));
         } else {
-            if (!MmsConfig.getMMSDeliveryReportsEnabled()) {
-                PreferenceCategory mmsOptions =
+            PreferenceCategory mmsOptions =
                     (PreferenceCategory)findPreference("pref_key_mms_settings");
+            if (!MmsConfig.getMMSDeliveryReportsEnabled()) {
                 mmsOptions.removePreference(mMmsDeliveryReportPref);
             }
             if (!MmsConfig.getMMSReadReportsEnabled()) {
-                PreferenceCategory mmsOptions =
-                    (PreferenceCategory)findPreference("pref_key_mms_settings");
                 mmsOptions.removePreference(mMmsReadReportPref);
+            }
+            // If the phone's SIM doesn't know it's own number, disable group mms.
+            if (!MmsConfig.getGroupMmsEnabled() ||
+                    TextUtils.isEmpty(MessageUtils.getLocalNumber())) {
+                mmsOptions.removePreference(mMmsGroupMmsPref);
             }
         }
 
@@ -262,11 +271,22 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         } else if (preference == mEnableNotificationsPref) {
             // Update the actual "enable notifications" value that is stored in secure settings.
             enableNotifications(mEnableNotificationsPref.isChecked(), this);
+        } else if (preference == mMmsAutoRetrievialPref) {
+            if (mMmsAutoRetrievialPref.isChecked()) {
+                startMmsDownload();
+            }
         }
 
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
 
+    /**
+     * Trigger the TransactionService to download any outstanding messages.
+     */
+    private void startMmsDownload() {
+        startService(new Intent(TransactionService.ACTION_ENABLE_AUTO_RETRIEVE, null, this,
+                TransactionService.class));
+    }
 
     NumberPickerDialog.OnNumberSetListener mSmsLimitListener =
         new NumberPickerDialog.OnNumberSetListener() {
@@ -347,5 +367,18 @@ public class MessagingPreferenceActivity extends PreferenceActivity
             }
         }
         mVibrateWhenPref.setSummary(null);
+    }
+
+    // For the group mms feature to be enabled, the following must be true:
+    //  1. the feature is enabled in mms_config.xml (currently on by default)
+    //  2. the feature is enabled in the mms settings page
+    //  3. the SIM knows its own phone number
+    public static boolean getIsGroupMmsEnabled(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean groupMmsPrefOn = prefs.getBoolean(
+                MessagingPreferenceActivity.GROUP_MMS_MODE, true);
+        return MmsConfig.getGroupMmsEnabled() &&
+                groupMmsPrefOn &&
+                !TextUtils.isEmpty(MessageUtils.getLocalNumber());
     }
 }

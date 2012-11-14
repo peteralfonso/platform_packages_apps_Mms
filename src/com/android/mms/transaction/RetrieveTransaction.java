@@ -17,8 +17,21 @@
 
 package com.android.mms.transaction;
 
+import java.io.IOException;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SqliteWrapper;
+import android.net.Uri;
+import android.provider.Telephony.Mms;
+import android.provider.Telephony.Mms.Inbox;
+import android.text.TextUtils;
+import android.util.Log;
+
 import com.android.mms.MmsConfig;
 import com.android.mms.ui.MessageUtils;
+import com.android.mms.ui.MessagingPreferenceActivity;
 import com.android.mms.util.DownloadManager;
 import com.android.mms.util.Recycler;
 import com.android.mms.widget.MmsWidgetProvider;
@@ -30,19 +43,6 @@ import com.google.android.mms.pdu.PduHeaders;
 import com.google.android.mms.pdu.PduParser;
 import com.google.android.mms.pdu.PduPersister;
 import com.google.android.mms.pdu.RetrieveConf;
-import com.google.android.mms.pdu.EncodedStringValue;
-import android.database.sqlite.SqliteWrapper;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.Telephony.Mms;
-import android.provider.Telephony.Mms.Inbox;
-import android.text.TextUtils;
-import android.util.Log;
-
-import java.io.IOException;
 
 /**
  * The RetrieveTransaction is responsible for retrieving multimedia
@@ -150,7 +150,8 @@ public class RetrieveTransaction extends Transaction implements Runnable {
             } else {
                 // Store M-Retrieve.conf into Inbox
                 PduPersister persister = PduPersister.getPduPersister(mContext);
-                msgUri = persister.persist(retrieveConf, Inbox.CONTENT_URI);
+                msgUri = persister.persist(retrieveConf, Inbox.CONTENT_URI, true,
+                        MessagingPreferenceActivity.getIsGroupMmsEnabled(mContext), null);
 
                 // Use local time instead of PDU time
                 ContentValues values = new ContentValues(1);

@@ -20,9 +20,6 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.android.mms.MmsApp;
-import com.android.mms.R;
-
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.SearchManager;
@@ -35,7 +32,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
-
 import android.provider.Telephony;
 import android.text.SpannableString;
 import android.text.TextPaint;
@@ -49,8 +45,9 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.mms.MmsApp;
+import com.android.mms.R;
 import com.android.mms.data.Contact;
-import com.android.mms.ui.ComposeMessageActivity;
 
 /***
  * Presents a List of search results.  Each item in the list represents a thread which
@@ -117,12 +114,13 @@ public class SearchActivity extends ListActivity
             float searchStringWidth = tp.measureText(mTargetString);
             float textFieldWidth = getWidth();
 
+            float ellipsisWidth = tp.measureText(sEllipsis);
+            textFieldWidth -= (2F * ellipsisWidth); // assume we'll need one on both ends
+
             String snippetString = null;
             if (searchStringWidth > textFieldWidth) {
                 snippetString = mFullText.substring(startPos, startPos + searchStringLength);
             } else {
-                float ellipsisWidth = tp.measureText(sEllipsis);
-                textFieldWidth -= (2F * ellipsisWidth); // assume we'll need one on both ends
 
                 int offset = -1;
                 int start = -1;
@@ -288,6 +286,11 @@ public class SearchActivity extends ListActivity
         mQueryHandler = new AsyncQueryHandler(cr) {
             protected void onQueryComplete(int token, Object cookie, Cursor c) {
                 if (c == null) {
+                    setTitle(getResources().getQuantityString(
+                        R.plurals.search_results_title,
+                        0,
+                        0,
+                        searchString));
                     return;
                 }
                 final int threadIdPos = c.getColumnIndex("thread_id");

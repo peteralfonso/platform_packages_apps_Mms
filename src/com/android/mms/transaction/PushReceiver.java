@@ -21,8 +21,23 @@ import static android.provider.Telephony.Sms.Intents.WAP_PUSH_RECEIVED_ACTION;
 import static com.google.android.mms.pdu.PduHeaders.MESSAGE_TYPE_DELIVERY_IND;
 import static com.google.android.mms.pdu.PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND;
 import static com.google.android.mms.pdu.PduHeaders.MESSAGE_TYPE_READ_ORIG_IND;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SqliteWrapper;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.PowerManager;
+import android.provider.Telephony.Mms;
+import android.provider.Telephony.Mms.Inbox;
+import android.util.Log;
 
 import com.android.mms.MmsConfig;
+import com.android.mms.ui.MessagingPreferenceActivity;
 import com.google.android.mms.ContentType;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.pdu.DeliveryInd;
@@ -32,21 +47,6 @@ import com.google.android.mms.pdu.PduHeaders;
 import com.google.android.mms.pdu.PduParser;
 import com.google.android.mms.pdu.PduPersister;
 import com.google.android.mms.pdu.ReadOrigInd;
-import android.database.sqlite.SqliteWrapper;
-
-import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.PowerManager;
-import android.provider.Telephony.Mms;
-import android.provider.Telephony.Mms.Inbox;
-import android.util.Log;
 
 /**
  * Receives Intent.WAP_PUSH_RECEIVED_ACTION intents and starts the
@@ -93,7 +93,8 @@ public class PushReceiver extends BroadcastReceiver {
                             break;
                         }
 
-                        Uri uri = p.persist(pdu, Inbox.CONTENT_URI);
+                        Uri uri = p.persist(pdu, Inbox.CONTENT_URI, true,
+                                MessagingPreferenceActivity.getIsGroupMmsEnabled(mContext), null);
                         // Update thread ID for ReadOrigInd & DeliveryInd.
                         ContentValues values = new ContentValues(1);
                         values.put(Mms.THREAD_ID, threadId);
@@ -118,7 +119,14 @@ public class PushReceiver extends BroadcastReceiver {
                         }
 
                         if (!isDuplicateNotification(mContext, nInd)) {
-                            Uri uri = p.persist(pdu, Inbox.CONTENT_URI);
+                            // Save the pdu. If we can start downloading the real pdu immediately,
+                            // don't allow persist() to create a thread for the notificationInd
+                            // because it causes UI jank.
+                            Uri uri = p.persist(pdu, Inbox.CONTENT_URI,
+                                    !NotificationTransaction.allowAutoDownload(),
+                                    MessagingPreferenceActivity.getIsGroupMmsEnabled(mContext),
+                                    null);
+
                             // Start service to finish the notification transaction.
                             Intent svc = new Intent(mContext, TransactionService.class);
                             svc.putExtra(TransactionBundle.URI, uri.toString());

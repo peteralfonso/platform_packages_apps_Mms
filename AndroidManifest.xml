@@ -40,6 +40,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INSTALL_DRM" />
+    <uses-permission android:name="android.permission.WRITE_APN_SETTINGS" />
 
     <application android:name="MmsApp"
             android:label="@string/app_label"
@@ -48,10 +49,10 @@
             android:allowTaskReparenting="true">
 
         <service android:name=".transaction.TransactionService"
-                 android:exported="true" />
+                 android:exported="false" />
 
         <service android:name=".transaction.SmsReceiverService"
-                 android:exported="true" />
+                 android:exported="false" />
 
         <activity android:name=".ui.ConversationList"
                   android:label="@string/app_label"
@@ -79,7 +80,7 @@
 
         <activity android:name=".ui.ComposeMessageActivity"
                   android:configChanges="orientation|screenSize|keyboardHidden"
-                  android:windowSoftInputMode="stateHidden"
+                  android:windowSoftInputMode="stateHidden|adjustResize"
                   android:theme="@style/MmsHoloTheme"
                   android:parentActivityName=".ui.ConversationList"
                   android:launchMode="singleTop" >
@@ -155,6 +156,10 @@
         <activity android:name=".ui.SlideshowEditActivity"
             android:theme="@style/MmsHoloTheme"
             android:label="@string/edit_slideshow_activity" />
+
+        <activity android:name=".ui.RecipientListActivity"
+            android:theme="@style/MmsHoloTheme"
+            android:label="@string/recipient_list_activity" />
 
         <activity android:name=".ui.SlideEditorActivity"
             android:windowSoftInputMode="adjustResize"
@@ -274,6 +279,7 @@
 
         <!-- Search Suggestions Provider -->
         <provider android:name="SuggestionsProvider"
+            android:exported="true"
             android:readPermission="android.permission.READ_SMS"
             android:authorities="com.android.mms.SuggestionsProvider" >
             <path-permission
@@ -296,6 +302,7 @@
         </service>
 
         <provider android:name="TempFileProvider"
+                  android:exported="true"
                   android:authorities="mms_temp_file"
                   android:multiprocess="true" />
 

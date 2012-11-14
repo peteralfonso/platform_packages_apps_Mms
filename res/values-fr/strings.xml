@@ -56,6 +56,7 @@
     <string name="insufficient_drm_rights" msgid="6989074725969164383">"Privilèges GDN insuffisants détectés."</string>
     <string name="copy_message_text" msgid="4296252229544252834">"Copier le texte"</string>
     <string name="message_options" msgid="6838806653341967550">"Options du message"</string>
+    <string name="slideshow_options" msgid="3501759384739796431">"Options du diaporama"</string>
     <string name="done" msgid="7479926268660505871">"OK"</string>
     <string name="move_up" msgid="7307578107431739359">"Déplacer vers le haut"</string>
     <string name="move_down" msgid="6356509518429479053">"Déplacer vers le bas"</string>
@@ -81,6 +82,7 @@
     <string name="remove" msgid="4625444913256213175">"Supprimer"</string>
     <string name="send" msgid="4589898724889248486">"Envoyer"</string>
     <string name="mms" msgid="1587631213714914559">"MMS"</string>
+    <string name="send_mms" msgid="2933162044872550662">"Envoyez le MMS."</string>
     <string name="all_threads" msgid="2663426830306307194">"Tous les fils"</string>
     <string name="type_to_compose_text_enter_to_send" msgid="3539985471008581265">"Saisissez un message"</string>
     <string name="open_keyboard_to_compose_message" msgid="7860109685511253191">"Ouvrez le clavier pour saisir un message"</string>
@@ -104,7 +106,6 @@
     <string name="cannot_send_message_reason" msgid="8745080126044054343">"Aucun destinataire valide n\'a été spécifié pour votre message."</string>
     <string name="cannot_forward_drm_obj" msgid="5047623751430559077">"Impossible de transférer l\'objet GDN inclus dans le message."</string>
     <string name="converting_to_picture_message" msgid="2980023239017588627">"Conversion en message multimédia..."</string>
-    <string name="converting_to_text_message" msgid="6374423235426015422">"Conversion en message SMS…"</string>
     <string name="cannot_add_slide_anymore" msgid="4631404749618820994">"Impossible d\'ajouter d\'autres diapositives."</string>
     <string name="cannot_add_picture_and_video" msgid="4954353772391381447">"Impossible d\'ajouter une vidéo et une image sur une même diapositive."</string>
     <string name="cannot_save_message" msgid="3375907366965264446">"Impossible d\'enregistrer le message."</string>
@@ -161,8 +162,10 @@
     <string name="pref_summary_sms_delivery_reports" msgid="5852207702358546129">"Demander un accusé de réception pour chaque message envoyé"</string>
     <string name="pref_summary_auto_delete" msgid="7719538116486177613">"Supprimer lorsque les limites suivantes sont atteintes"</string>
     <string name="pref_summary_delete_limit" msgid="597128041393045216">"<xliff:g id="COUNT">%1$s</xliff:g> messages par conversation"</string>
+    <string name="pref_summary_mms_group_mms" msgid="2266928687440696745">"Utiliser un MMS pour envoyer un message unique à plusieurs destinataires"</string>
     <string name="pref_title_manage_sim_messages" msgid="7820895261757881177">"Gestion messages carte SIM"</string>
     <string name="pref_title_mms_delivery_reports" msgid="6666857926679451910">"Accusé de réception"</string>
+    <string name="pref_title_mms_group_mms" msgid="1251698526583908432">"Messagerie de groupe"</string>
     <string name="pref_title_mms_read_reports" msgid="4882179829495828541">"Confirmation de lecture"</string>
     <string name="pref_title_sms_delivery_reports" msgid="876064208254451038">"Accusé de réception"</string>
     <string name="pref_title_auto_delete" msgid="7227835692631701134">"Anciens messages"</string>
@@ -200,7 +203,7 @@
     <string name="delete" msgid="1409973060081564612">"Supprimer"</string>
     <string name="select_conversations" msgid="7816517565640002844">"Sélectionner des conversations"</string>
     <string name="no_conversations" msgid="6773767655149258445">"Aucune conversation"</string>
-    <string name="loading_conversations" msgid="5510430408235967094">"Chargement des conversations en cours…"</string>
+    <string name="loading_conversations" msgid="5510430408235967094">"Chargement des conversations…"</string>
     <string name="cannot_get_details" msgid="850292987983026806">"Impossible de récupérer les détails."</string>
     <string name="message_details_title" msgid="9223295113731634528">"Détails du message"</string>
     <string name="message_type_label" msgid="7975373966795945566">"Type : "</string>
@@ -286,6 +289,7 @@
     <string name="saved_ringtone" msgid="3847363932276708626">"Sonnerie enregistrée."</string>
     <string name="saved_ringtone_fail" msgid="4778500070919251116">"Impossible d\'enregistrer la sonnerie."</string>
     <string name="menu_insert_smiley" msgid="4964504393061025071">"Insérer une émoticône"</string>
+    <string name="menu_group_participants" msgid="4288356090262299071">"Membres du groupe"</string>
     <string name="select_link_title" msgid="3371818607625768447">"Sélectionner une action"</string>
     <string name="slide_number" msgid="1923958526266726635">"Diapositive <xliff:g id="NUMBER">%s</xliff:g>"</string>
   <plurals name="slide_duration">
@@ -297,6 +301,7 @@
     <string name="storage_limits_activity" msgid="8810530813311077716">"Limites de stockage"</string>
     <string name="change_duration_activity" msgid="7048606979485031693">"Changer la durée"</string>
     <string name="edit_slideshow_activity" msgid="8751493388760050529">"Modifier le diaporama"</string>
+    <string name="recipient_list_activity" msgid="1254938236543727019">"Membres du groupe"</string>
     <string name="edit_slide_activity" msgid="8752829671778696983">"Modifier la diapositive"</string>
     <string name="slideshow_activity" msgid="5658249461317434432">"Diaporama"</string>
     <string name="class_0_message_activity" msgid="6631339964159861048">"Message de catégorie 0"</string>
@@ -343,4 +348,5 @@
     <string name="attachment_picture" msgid="3709286281567284296">"Image"</string>
     <string name="notification_separator" msgid="2334673105226536422">"  "</string>
     <string name="enumeration_comma" msgid="213598026698964628">", "</string>
+    <string name="message_timestamp_format" msgid="4188999027493614617">"<xliff:g id="STRING_0">%1$s</xliff:g> – <xliff:g id="STRING_1">%2$s</xliff:g>"</string>
 </resources>

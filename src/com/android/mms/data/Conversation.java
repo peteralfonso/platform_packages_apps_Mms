@@ -19,8 +19,8 @@ import android.provider.BaseColumns;
 import android.provider.Telephony.Mms;
 import android.provider.Telephony.MmsSms;
 import android.provider.Telephony.Sms;
-import android.provider.Telephony.Threads;
 import android.provider.Telephony.Sms.Conversations;
+import android.provider.Telephony.Threads;
 import android.provider.Telephony.ThreadsColumns;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
@@ -30,9 +30,9 @@ import com.android.mms.LogTag;
 import com.android.mms.MmsApp;
 import com.android.mms.R;
 import com.android.mms.transaction.MessagingNotification;
+import com.android.mms.ui.ComposeMessageActivity;
 import com.android.mms.ui.MessageUtils;
 import com.android.mms.util.DraftCache;
-import com.google.android.mms.util.PduCache;
 
 /**
  * An interface for finding information about conversations and/or creating new ones.
@@ -40,6 +40,7 @@ import com.google.android.mms.util.PduCache;
 public class Conversation {
     private static final String TAG = "Mms/conv";
     private static final boolean DEBUG = false;
+    private static final boolean DELETEDEBUG = false;
 
     public static final Uri sAllThreadsUri =
         Threads.CONTENT_URI.buildUpon().appendQueryParameter("simple", "true").build();
@@ -303,6 +304,10 @@ public class Conversation {
      * always be called from the UI thread.
      */
     public void markAsRead() {
+        if (DELETEDEBUG) {
+            Contact.logWithTrace(TAG, "markAsRead mMarkAsReadWaiting: " + mMarkAsReadWaiting +
+                    " mMarkAsReadBlocked: " + mMarkAsReadBlocked);
+        }
         if (mMarkAsReadWaiting) {
             // We've already been asked to mark everything as read, but we're blocked.
             return;
@@ -317,8 +322,8 @@ public class Conversation {
 
         new AsyncTask<Void, Void, Void>() {
             protected Void doInBackground(Void... none) {
-                if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
-                    LogTag.debug("markAsRead");
+                if (DELETEDEBUG || Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
+                    LogTag.debug("markAsRead.doInBackground");
                 }
                 // If we have no Uri to mark (as in the case of a conversation that
                 // has not yet made its way to disk), there's nothing to do.
@@ -349,8 +354,10 @@ public class Conversation {
                     }
                     setHasUnreadMessages(false);
                 }
-                // Always update notifications regardless of the read state.
-                MessagingNotification.blockingUpdateAllNotifications(mContext);
+                // Always update notifications regardless of the read state, which is usually
+                // canceling the notification of the thread that was just marked read.
+                MessagingNotification.blockingUpdateAllNotifications(mContext,
+                        MessagingNotification.THREAD_NONE);
 
                 return null;
             }
@@ -364,7 +371,7 @@ public class Conversation {
      * can mark messages as read. Only call this function on the UI thread.
      */
     public void blockMarkAsRead(boolean block) {
-        if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
+        if (DELETEDEBUG || Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
             LogTag.debug("blockMarkAsRead: " + block);
         }
 
@@ -415,13 +422,13 @@ public class Conversation {
      * @return The thread ID of this conversation in the database
      */
     public synchronized long ensureThreadId() {
-        if (DEBUG) {
+        if (DEBUG || DELETEDEBUG) {
             LogTag.debug("ensureThreadId before: " + mThreadId);
         }
         if (mThreadId <= 0) {
             mThreadId = getOrCreateThreadId(mContext, mRecipients);
         }
-        if (DEBUG) {
+        if (DEBUG || DELETEDEBUG) {
             LogTag.debug("ensureThreadId after: " + mThreadId);
         }
 
@@ -456,7 +463,7 @@ public class Conversation {
         if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
             Log.d(TAG, "setRecipients after: " + this.toString());
         }
-}
+    }
 
     /**
      * Returns the recipient set of this conversation.
@@ -567,6 +574,10 @@ public class Conversation {
             }
         }
         synchronized(sDeletingThreadsLock) {
+            if (DELETEDEBUG) {
+                ComposeMessageActivity.log("Conversation getOrCreateThreadId for: " +
+                        list.formatNamesAndNumbers(",") + " sDeletingThreads: " + sDeletingThreads);
+            }
             long now = System.currentTimeMillis();
             while (sDeletingThreads) {
                 try {
@@ -583,7 +594,7 @@ public class Conversation {
                 }
             }
             long retVal = Threads.getOrCreateThreadId(context, recipients);
-            if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
+            if (DELETEDEBUG || Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
                 LogTag.debug("[Conversation] getOrCreateThreadId for (%s) returned %d",
                         recipients, retVal);
             }
@@ -593,6 +604,10 @@ public class Conversation {
 
     public static long getOrCreateThreadId(Context context, String address) {
         synchronized(sDeletingThreadsLock) {
+            if (DELETEDEBUG) {
+                ComposeMessageActivity.log("Conversation getOrCreateThreadId for: " +
+                        address + " sDeletingThreads: " + sDeletingThreads);
+            }
             long now = System.currentTimeMillis();
             while (sDeletingThreads) {
                 try {
@@ -609,7 +624,7 @@ public class Conversation {
                 }
             }
             long retVal = Threads.getOrCreateThreadId(context, address);
-            if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
+            if (DELETEDEBUG || Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
                 LogTag.debug("[Conversation] getOrCreateThreadId for (%s) returned %d",
                         address, retVal);
             }
@@ -697,29 +712,30 @@ public class Conversation {
      *                upon completion of the conversation being deleted
      * @param token   The token that will be passed to onDeleteComplete
      * @param deleteAll Delete the whole thread including locked messages
-     * @param threadId Thread ID of the conversation to be deleted
+     * @param threadIds Collection of thread IDs of the conversations to be deleted
      */
     public static void startDelete(ConversationQueryHandler handler, int token, boolean deleteAll,
-            long threadId) {
+            Collection<Long> threadIds) {
         synchronized(sDeletingThreadsLock) {
+            if (DELETEDEBUG) {
+                Log.v(TAG, "Conversation startDelete sDeletingThreads: " +
+                        sDeletingThreads);
+            }
             if (sDeletingThreads) {
                 Log.e(TAG, "startDeleteAll already in the middle of a delete", new Exception());
             }
-            sDeletingThreads = true;
-            Uri uri = ContentUris.withAppendedId(Threads.CONTENT_URI, threadId);
-            String selection = deleteAll ? null : "locked=0";
-
             MmsApp.getApplication().getPduLoaderManager().clear();
+            sDeletingThreads = true;
 
-            // HACK: the keys to the thumbnail cache are the part uris, such as mms/part/3
-            // Because the part table doesn't have auto-increment ids, the part ids are reused
-            // when a message or thread is deleted. For now, we're clearing the whole thumbnail
-            // cache so we don't retrieve stale images when part ids are reused. This will be
-            // fixed in the next release in the mms provider.
-            MmsApp.getApplication().getThumbnailManager().clear();
+            for (long threadId : threadIds) {
+                Uri uri = ContentUris.withAppendedId(Threads.CONTENT_URI, threadId);
+                String selection = deleteAll ? null : "locked=0";
 
-            handler.setDeleteToken(token);
-            handler.startDelete(token, new Long(threadId), uri, selection, null);
+                handler.setDeleteToken(token);
+                handler.startDelete(token, new Long(threadId), uri, selection, null);
+
+                DraftCache.getInstance().setDraftState(threadId, false);
+            }
         }
     }
 
@@ -733,20 +749,19 @@ public class Conversation {
     public static void startDeleteAll(ConversationQueryHandler handler, int token,
             boolean deleteAll) {
         synchronized(sDeletingThreadsLock) {
+            if (DELETEDEBUG) {
+                Log.v(TAG, "Conversation startDeleteAll sDeletingThreads: " +
+                                sDeletingThreads);
+            }
             if (sDeletingThreads) {
                 Log.e(TAG, "startDeleteAll already in the middle of a delete", new Exception());
             }
             sDeletingThreads = true;
             String selection = deleteAll ? null : "locked=0";
 
-            MmsApp.getApplication().getPduLoaderManager().clear();
-
-            // HACK: the keys to the thumbnail cache are the part uris, such as mms/part/3
-            // Because the part table doesn't have auto-increment ids, the part ids are reused
-            // when a message or thread is deleted. For now, we're clearing the whole thumbnail
-            // cache so we don't retrieve stale images when part ids are reused. This will be
-            // fixed in the next release in the mms provider.
-            MmsApp.getApplication().getThumbnailManager().clear();
+            MmsApp app = MmsApp.getApplication();
+            app.getPduLoaderManager().clear();
+            app.getThumbnailManager().clear();
 
             handler.setDeleteToken(token);
             handler.startDelete(token, new Long(-1), Threads.CONTENT_URI, selection, null);
@@ -779,6 +794,10 @@ public class Conversation {
                 // release lock
                 synchronized(sDeletingThreadsLock) {
                     sDeletingThreads = false;
+                    if (DELETEDEBUG) {
+                        Log.v(TAG, "Conversation onDeleteComplete sDeletingThreads: " +
+                                        sDeletingThreads);
+                    }
                     sDeletingThreadsLock.notifyAll();
                 }
             }
@@ -849,7 +868,8 @@ public class Conversation {
             conv.mMessageCount = c.getInt(MESSAGE_COUNT);
 
             // Replace the snippet with a default value if it's empty.
-            String snippet = MessageUtils.extractEncStrFromCursor(c, SNIPPET, SNIPPET_CS);
+            String snippet = MessageUtils.cleanseMmsSubject(context,
+                    MessageUtils.extractEncStrFromCursor(c, SNIPPET, SNIPPET_CS));
             if (TextUtils.isEmpty(snippet)) {
                 snippet = context.getString(R.string.no_subject_view);
             }
@@ -1040,18 +1060,22 @@ public class Conversation {
     }
 
     public static void markAllConversationsAsSeen(final Context context) {
-        if (DEBUG) {
-            LogTag.debug("Conversation.markAllConversationsAsSeen");
+        if (DELETEDEBUG || DEBUG) {
+            Contact.logWithTrace(TAG, "Conversation.markAllConversationsAsSeen");
         }
 
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
+                if (DELETEDEBUG) {
+                    Log.d(TAG, "Conversation.markAllConversationsAsSeen.run");
+                }
                 blockingMarkAllSmsMessagesAsSeen(context);
                 blockingMarkAllMmsMessagesAsSeen(context);
 
                 // Always update notifications regardless of the read state.
-                MessagingNotification.blockingUpdateAllNotifications(context);
+                MessagingNotification.blockingUpdateAllNotifications(context,
+                        MessagingNotification.THREAD_NONE);
             }
         }, "Conversation.markAllConversationsAsSeen");
         thread.setPriority(Thread.MIN_PRIORITY);
@@ -1080,7 +1104,7 @@ public class Conversation {
             return;
         }
 
-        if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
+        if (DELETEDEBUG || Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
             Log.d(TAG, "mark " + count + " SMS msgs as seen");
         }
 
@@ -1115,7 +1139,7 @@ public class Conversation {
             return;
         }
 
-        if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
+        if (DELETEDEBUG || Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
             Log.d(TAG, "mark " + count + " MMS msgs as seen");
         }
 

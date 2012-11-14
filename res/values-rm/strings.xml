@@ -65,6 +65,8 @@
     <!-- no translation found for copy_message_text (4296252229544252834) -->
     <skip />
     <string name="message_options" msgid="6838806653341967550">"Opziuns dal messadi"</string>
+    <!-- no translation found for slideshow_options (3501759384739796431) -->
+    <skip />
     <string name="done" msgid="7479926268660505871">"Finì"</string>
     <string name="move_up" msgid="7307578107431739359">"Spustar ensi"</string>
     <string name="move_down" msgid="6356509518429479053">"Spustar engiu"</string>
@@ -91,6 +93,8 @@
     <string name="remove" msgid="4625444913256213175">"Allontanar"</string>
     <string name="send" msgid="4589898724889248486">"Trametter"</string>
     <string name="mms" msgid="1587631213714914559">"MMS"</string>
+    <!-- no translation found for send_mms (2933162044872550662) -->
+    <skip />
     <string name="all_threads" msgid="2663426830306307194">"Tut ils fils da discussiun"</string>
     <!-- no translation found for type_to_compose_text_enter_to_send (3539985471008581265) -->
     <skip />
@@ -127,7 +131,6 @@
     <!-- no translation found for cannot_forward_drm_obj (5047623751430559077) -->
     <skip />
     <string name="converting_to_picture_message" msgid="2980023239017588627">"Conversiun en messadi multimedia…"</string>
-    <string name="converting_to_text_message" msgid="6374423235426015422">"Conversiun en in messadi SMS en process…"</string>
     <!-- no translation found for cannot_add_slide_anymore (4631404749618820994) -->
     <skip />
     <!-- no translation found for cannot_add_picture_and_video (4954353772391381447) -->
@@ -187,8 +190,12 @@
     <string name="pref_summary_sms_delivery_reports" msgid="5852207702358546129">"Dumandar ina conferma da retschavida per mintga messadi tramess"</string>
     <string name="pref_summary_auto_delete" msgid="7719538116486177613">"Stizzar il messadis vegls sche las suandantas limitas èn cuntanschidas"</string>
     <string name="pref_summary_delete_limit" msgid="597128041393045216">"<xliff:g id="COUNT">%1$s</xliff:g> messadis per conversaziun"</string>
+    <!-- no translation found for pref_summary_mms_group_mms (2266928687440696745) -->
+    <skip />
     <string name="pref_title_manage_sim_messages" msgid="7820895261757881177">"Administrar ils messadis sin la carta SIM"</string>
     <string name="pref_title_mms_delivery_reports" msgid="6666857926679451910">"Confermas da retschavida"</string>
+    <!-- no translation found for pref_title_mms_group_mms (1251698526583908432) -->
+    <skip />
     <string name="pref_title_mms_read_reports" msgid="4882179829495828541">"Confermas da lectura"</string>
     <string name="pref_title_sms_delivery_reports" msgid="876064208254451038">"Rapports da spediziun"</string>
     <string name="pref_title_auto_delete" msgid="7227835692631701134">"Stizzar messadis vegls"</string>
@@ -338,6 +345,8 @@
     <!-- no translation found for saved_ringtone_fail (4778500070919251116) -->
     <skip />
     <string name="menu_insert_smiley" msgid="4964504393061025071">"Inserir in emoticon"</string>
+    <!-- no translation found for menu_group_participants (4288356090262299071) -->
+    <skip />
     <!-- no translation found for select_link_title (3371818607625768447) -->
     <skip />
     <string name="slide_number" msgid="1923958526266726635">"Dia <xliff:g id="NUMBER">%s</xliff:g>"</string>
@@ -350,6 +359,8 @@
     <string name="storage_limits_activity" msgid="8810530813311077716">"Limitas da memorisaziun"</string>
     <string name="change_duration_activity" msgid="7048606979485031693">"Midar la durada"</string>
     <string name="edit_slideshow_activity" msgid="8751493388760050529">"Modifitgar la preschentaziun da dia"</string>
+    <!-- no translation found for recipient_list_activity (1254938236543727019) -->
+    <skip />
     <string name="edit_slide_activity" msgid="8752829671778696983">"Modifitgar il dia"</string>
     <string name="slideshow_activity" msgid="5658249461317434432">"Preschentaziun da dia"</string>
     <!-- no translation found for class_0_message_activity (6631339964159861048) -->
@@ -410,5 +421,7 @@
     <!-- no translation found for notification_separator (2334673105226536422) -->
     <skip />
     <!-- no translation found for enumeration_comma (213598026698964628) -->
+    <skip />
+    <!-- no translation found for message_timestamp_format (4188999027493614617) -->
     <skip />
 </resources>

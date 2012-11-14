@@ -18,11 +18,7 @@
 package com.android.mms.ui;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 
-import com.android.mms.R;
 import com.android.mms.model.AudioModel;
 import com.android.mms.model.ImageModel;
 import com.android.mms.model.Model;
@@ -36,6 +32,7 @@ import com.android.mms.util.ThumbnailManager.ImageLoaded;
 public class MmsThumbnailPresenter extends Presenter {
     private static final String TAG = "MmsThumbnailPresenter";
     private ItemLoadedCallback mOnLoadedCallback;
+    private ItemLoadedFuture mItemLoadedFuture;
 
     public MmsThumbnailPresenter(Context context, ViewInterface view, Model model) {
         super(context, view, model);
@@ -66,6 +63,11 @@ public class MmsThumbnailPresenter extends Presenter {
             new ItemLoadedCallback<ImageLoaded>() {
         public void onItemLoaded(ImageLoaded imageLoaded, Throwable exception) {
             if (exception == null) {
+                if (mItemLoadedFuture != null) {
+                    synchronized(mItemLoadedFuture) {
+                        mItemLoadedFuture.setIsDone(true);
+                    }
+                }
                 if (mOnLoadedCallback != null) {
                     mOnLoadedCallback.onItemLoaded(imageLoaded, exception);
                 } else {
@@ -85,11 +87,11 @@ public class MmsThumbnailPresenter extends Presenter {
     };
 
     private void presentVideoThumbnail(SlideViewInterface view, VideoModel video) {
-        video.loadThumbnailBitmap(mImageLoadedCallback);
+        mItemLoadedFuture = video.loadThumbnailBitmap(mImageLoadedCallback);
     }
 
     private void presentImageThumbnail(SlideViewInterface view, ImageModel image) {
-        image.loadThumbnailBitmap(mImageLoadedCallback);
+        mItemLoadedFuture = image.loadThumbnailBitmap(mImageLoadedCallback);
     }
 
     protected void presentAudioThumbnail(SlideViewInterface view, AudioModel audio) {

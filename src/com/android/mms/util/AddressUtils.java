@@ -16,22 +16,20 @@
  */
 package com.android.mms.util;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SqliteWrapper;
+import android.net.Uri;
+import android.provider.Telephony.Mms;
+import android.provider.Telephony.Mms.Addr;
+import android.text.TextUtils;
+
+import com.android.i18n.phonenumbers.PhoneNumberUtil;
 import com.android.mms.MmsApp;
 import com.android.mms.R;
 import com.google.android.mms.pdu.EncodedStringValue;
 import com.google.android.mms.pdu.PduHeaders;
 import com.google.android.mms.pdu.PduPersister;
-import android.database.sqlite.SqliteWrapper;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.location.Country;
-import android.net.Uri;
-import android.provider.Telephony.Mms;
-import android.provider.Telephony.Mms.Addr;
-import android.text.TextUtils;
-import android.telephony.PhoneNumberUtils;
-import com.android.i18n.phonenumbers.PhoneNumberUtil;
 
 public class AddressUtils {
     private static final String TAG = "AddressUtils";
@@ -70,12 +68,18 @@ public class AddressUtils {
         return context.getString(R.string.hidden_sender_address);
     }
 
-    public static boolean isPossiblePhoneNumber(String query) {
+    /**
+     * isPossiblePhoneNumberCanDoFileAccess does a more accurate test if the input is a
+     * phone number, but it can do file access to load country prefixes and other info, so
+     * it's not safe to call from the UI thread.
+     * @param query the phone number to test
+     * @return true if query looks like a valid phone number
+     */
+    public static boolean isPossiblePhoneNumberCanDoFileAccess(String query) {
         String currentCountry = MmsApp.getApplication().getCurrentCountryIso().toUpperCase();
         if (mPhoneNumberUtil == null) {
             mPhoneNumberUtil = PhoneNumberUtil.getInstance();
         }
         return mPhoneNumberUtil.isPossibleNumber(query, currentCountry);
     }
-
 }

@@ -33,6 +33,7 @@ import com.android.mms.LogTag;
 import com.android.mms.MmsApp;
 import com.android.mms.R;
 import com.android.mms.data.Contact;
+import com.android.mms.data.WorkingMessage;
 import com.android.mms.model.SlideModel;
 import com.android.mms.model.SlideshowModel;
 import com.android.mms.model.TextModel;
@@ -168,18 +169,20 @@ public class MessageItem {
                 EncodedStringValue v = new EncodedStringValue(
                         cursor.getInt(columnsMap.mColumnMmsSubjectCharset),
                         PduPersister.getBytes(subject));
-                mSubject = v.getString();
+                mSubject = MessageUtils.cleanseMmsSubject(context, v.getString());
             }
             mLocked = cursor.getInt(columnsMap.mColumnMmsLocked) != 0;
             mSlideshow = null;
-            mAttachmentType = ATTACHMENT_TYPE_NOT_LOADED;
             mDeliveryStatus = DeliveryStatus.NONE;
             mReadReport = false;
             mBody = null;
             mMessageSize = 0;
             mTextContentType = null;
-            mTimestamp = null;
+            // Initialize the time stamp to "" instead of null
+            mTimestamp = "";
             mMmsStatus = cursor.getInt(columnsMap.mColumnMmsStatus);
+            mAttachmentType = cursor.getInt(columnsMap.mColumnMmsTextOnly) != 0 ?
+                    WorkingMessage.TEXT : ATTACHMENT_TYPE_NOT_LOADED;
 
             // Start an async load of the pdu. If the pdu is already loaded, the callback
             // will get called immediately
@@ -217,6 +220,19 @@ public class MessageItem {
 
     public boolean isDownloaded() {
         return (mMessageType != PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND);
+    }
+
+    public boolean isMe() {
+        // Logic matches MessageListAdapter.getItemViewType which is used to decide which
+        // type of MessageListItem to create: a left or right justified item depending on whether
+        // the message is incoming or outgoing.
+        boolean isIncomingMms = isMms()
+                                    && (mBoxId == Mms.MESSAGE_BOX_INBOX
+                                            || mBoxId == Mms.MESSAGE_BOX_ALL);
+        boolean isIncomingSms = isSms()
+                                    && (mBoxId == Sms.MESSAGE_TYPE_INBOX
+                                            || mBoxId == Sms.MESSAGE_TYPE_ALL);
+        return !(isIncomingMms || isIncomingSms);
     }
 
     public boolean isOutgoingMessage() {
@@ -287,6 +303,11 @@ public class MessageItem {
             if (exception != null) {
                 Log.e(TAG, "PduLoadedMessageItemCallback PDU couldn't be loaded: ", exception);
                 return;
+            }
+            if (mItemLoadedFuture != null) {
+                synchronized(mItemLoadedFuture) {
+                    mItemLoadedFuture.setIsDone(true);
+                }
             }
             PduLoaderManager.PduLoaded pduLoaded = (PduLoaderManager.PduLoaded)result;
             long timestamp = 0L;
@@ -383,11 +404,11 @@ public class MessageItem {
     }
 
     public void cancelPduLoading() {
-        if (mItemLoadedFuture != null) {
+        if (mItemLoadedFuture != null && !mItemLoadedFuture.isDone()) {
             if (Log.isLoggable(LogTag.APP, Log.DEBUG)) {
                 Log.v(TAG, "cancelPduLoading for: " + this);
             }
-            mItemLoadedFuture.cancel();
+            mItemLoadedFuture.cancel(mMessageUri);
             mItemLoadedFuture = null;
         }
     }

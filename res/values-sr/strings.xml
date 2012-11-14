@@ -56,6 +56,7 @@
     <string name="insufficient_drm_rights" msgid="6989074725969164383">"Открили смо да немате довољна DRM права."</string>
     <string name="copy_message_text" msgid="4296252229544252834">"Копирај текст"</string>
     <string name="message_options" msgid="6838806653341967550">"Опције поруке"</string>
+    <string name="slideshow_options" msgid="3501759384739796431">"Опције пројекције слајдова"</string>
     <string name="done" msgid="7479926268660505871">"Готово"</string>
     <string name="move_up" msgid="7307578107431739359">"Премести нагоре"</string>
     <string name="move_down" msgid="6356509518429479053">"Премести надоле"</string>
@@ -81,6 +82,7 @@
     <string name="remove" msgid="4625444913256213175">"Уклони"</string>
     <string name="send" msgid="4589898724889248486">"Пошаљи"</string>
     <string name="mms" msgid="1587631213714914559">"MMS"</string>
+    <string name="send_mms" msgid="2933162044872550662">"Пошаљи MMS"</string>
     <string name="all_threads" msgid="2663426830306307194">"Све преписке"</string>
     <string name="type_to_compose_text_enter_to_send" msgid="3539985471008581265">"Откуцајте поруку"</string>
     <string name="open_keyboard_to_compose_message" msgid="7860109685511253191">"Активирајте тастатуру да бисте откуцали поруку"</string>
@@ -104,7 +106,6 @@
     <string name="cannot_send_message_reason" msgid="8745080126044054343">"Порука нема важеће примаоце."</string>
     <string name="cannot_forward_drm_obj" msgid="5047623751430559077">"Није могуће проследити DRM објекат увршћен у поруку."</string>
     <string name="converting_to_picture_message" msgid="2980023239017588627">"Конвертовање у мултимедијалну поруку…"</string>
-    <string name="converting_to_text_message" msgid="6374423235426015422">"Конвертовање у текстуалну поруку…"</string>
     <string name="cannot_add_slide_anymore" msgid="4631404749618820994">"Није могуће додати још слајдова."</string>
     <string name="cannot_add_picture_and_video" msgid="4954353772391381447">"Није могуће додати видео и слику на исти слајд."</string>
     <string name="cannot_save_message" msgid="3375907366965264446">"Није могуће сачувати поруку."</string>
@@ -161,8 +162,10 @@
     <string name="pref_summary_sms_delivery_reports" msgid="5852207702358546129">"Захтевај извештај о испоруци за сваку послату поруку"</string>
     <string name="pref_summary_auto_delete" msgid="7719538116486177613">"Избриши старе поруке када се достигне ограничење"</string>
     <string name="pref_summary_delete_limit" msgid="597128041393045216">"<xliff:g id="COUNT">%1$s</xliff:g> поруке(а) по преписци"</string>
+    <string name="pref_summary_mms_group_mms" msgid="2266928687440696745">"Користите MMS за слање једне поруке када постоји више прималаца"</string>
     <string name="pref_title_manage_sim_messages" msgid="7820895261757881177">"Управљање порукама на SIM картици"</string>
     <string name="pref_title_mms_delivery_reports" msgid="6666857926679451910">"Извештаји о испоруци"</string>
+    <string name="pref_title_mms_group_mms" msgid="1251698526583908432">"Групна размена порука"</string>
     <string name="pref_title_mms_read_reports" msgid="4882179829495828541">"Читање извештаја"</string>
     <string name="pref_title_sms_delivery_reports" msgid="876064208254451038">"Извештаји о испоруци"</string>
     <string name="pref_title_auto_delete" msgid="7227835692631701134">"Избриши старе поруке"</string>
@@ -286,6 +289,7 @@
     <string name="saved_ringtone" msgid="3847363932276708626">"Мелодија звона је сачувана."</string>
     <string name="saved_ringtone_fail" msgid="4778500070919251116">"Није могуће сачувати мелодију звона."</string>
     <string name="menu_insert_smiley" msgid="4964504393061025071">"Уметни смајли"</string>
+    <string name="menu_group_participants" msgid="4288356090262299071">"Групиши учеснике"</string>
     <string name="select_link_title" msgid="3371818607625768447">"Избор радње"</string>
     <string name="slide_number" msgid="1923958526266726635">"Слајд <xliff:g id="NUMBER">%s</xliff:g>"</string>
   <plurals name="slide_duration">
@@ -297,6 +301,7 @@
     <string name="storage_limits_activity" msgid="8810530813311077716">"Ограничење за складиштење"</string>
     <string name="change_duration_activity" msgid="7048606979485031693">"Промена трајања"</string>
     <string name="edit_slideshow_activity" msgid="8751493388760050529">"Измена пројекције слајдова"</string>
+    <string name="recipient_list_activity" msgid="1254938236543727019">"Груписање учесника"</string>
     <string name="edit_slide_activity" msgid="8752829671778696983">"Измена слајда"</string>
     <string name="slideshow_activity" msgid="5658249461317434432">"Пројекција слајдова"</string>
     <string name="class_0_message_activity" msgid="6631339964159861048">"Порука класе 0"</string>
@@ -343,4 +348,5 @@
     <string name="attachment_picture" msgid="3709286281567284296">"Слика"</string>
     <string name="notification_separator" msgid="2334673105226536422">"  "</string>
     <string name="enumeration_comma" msgid="213598026698964628">", "</string>
+    <string name="message_timestamp_format" msgid="4188999027493614617">"<xliff:g id="STRING_0">%1$s</xliff:g> – <xliff:g id="STRING_1">%2$s</xliff:g>"</string>
 </resources>

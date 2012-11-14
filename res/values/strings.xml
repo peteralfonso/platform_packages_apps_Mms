@@ -22,7 +22,8 @@
     <!-- The name of the SMS/MMS app as it appears to the user in the Home screen, task switcher, etc. -->
     <string name="app_label">Messaging</string>
 
-    <!-- Command name to open a Compose screen; displays in conversation list -->
+    <!-- Command name to open a Compose screen; displays in conversation list.
+         Also used as accessibility text for widget's new message button -->
     <string name="new_message">New message</string>
     <!-- Context menu item on an individual message for dialing the sender's phone number -->
     <string name="menu_call_back">Call <xliff:g id="name">%s</xliff:g></string>
@@ -102,6 +103,8 @@
     <string name="copy_message_text">Copy text</string>
     <!-- Header for context menu on an individual message -->
     <string name="message_options">Message options</string>
+    <!-- Header for context menu on an individual slideshow -->
+    <string name="slideshow_options">Slideshow options</string>
 
     <!-- Button text on edit slide screen indicating the user wants to finish editing that slide -->
     <string name="done">Done</string>
@@ -160,6 +163,8 @@
     <string name="send">Send</string>
     <!-- Text to appear directly below the "Send" text on the SMS/MMS send button. The "MMS" text is on a second line in a smaller font. This is similar to saying "Send (mms)". -->
     <string name="mms">MMS</string>
+    <!-- Content description for the send button when sending an mms (imperative verb) -->
+    <string name="send_mms">Send MMS</string>
 
     <!-- Menu item in conversation screen for returning to the conversation list -->
     <string name="all_threads">All threads</string>
@@ -212,8 +217,6 @@
 
     <!-- Brief message that appears when converting a message from SMS to MMS. -->
     <string name="converting_to_picture_message">Converting to multimedia message\u2026</string>
-    <!-- Brief message that appears when converting a message from MMS to SMS. -->
-    <string name="converting_to_text_message">Converting to text message\u2026</string>
     <!-- Brief message that appears when the maximum number of slides has been reached -->
     <string name="cannot_add_slide_anymore">Can\'t add more slides.</string>
     <!-- Brief message that appears when user tries to add picture to a slide which already has a video. -->
@@ -326,10 +329,14 @@
     <string name="pref_summary_auto_delete">Delete old messages as limits are reached</string>
     <!-- Settings item description for integer auto-delete sms message limit -->
     <string name="pref_summary_delete_limit"><xliff:g id="count">%1$s</xliff:g> messages per conversation</string>
+    <!-- Settings item description for boolean MMS enable group MMS setting -->
+    <string name="pref_summary_mms_group_mms">Use MMS to send a single message when there are multiple recipients</string>
     <!-- Settings item for entering SIM card message screen -->
     <string name="pref_title_manage_sim_messages">Manage SIM card messages</string>
     <!-- Settings item for boolean option to enable/disable MMS delivery reports -->
     <string name="pref_title_mms_delivery_reports">Delivery reports</string>
+    <!-- Settings item for boolean option to enable/disable MMS group messages -->
+    <string name="pref_title_mms_group_mms">Group messaging</string>
     <!-- Settings item for boolean option to enable/disable MMS read reports -->
     <string name="pref_title_mms_read_reports">Read reports</string>
     <!-- Settings item for boolean option to enable/disable SMS delivery reports -->
@@ -629,7 +636,11 @@
     <string name="saved_ringtone_fail">Couldn\'t save ringtone.</string>
     <!-- Menu item -->
     <string name="menu_insert_smiley">Insert smiley</string>
+
     <string name="menu_insert_emoji">Insert emojis</string>
+
+    <!-- Menu item  [CHAR LIMIT=40] -->
+    <string name="menu_group_participants">Group participants</string>
 
     <!-- This is the dialog title for the "Select link" dialog, shown when the user clicks on a
     chat in the chat history view if there are links in the chat message. The dialog displays the
@@ -659,6 +670,9 @@
 
     <!-- Title of the slideshow editor activity. -->
     <string name="edit_slideshow_activity">Edit slideshow</string>
+
+    <!-- Title of the recipient list activity. [CHAR LIMIT=NONE] -->
+    <string name="recipient_list_activity">Group participants</string>
 
     <!-- Title of the slide editor activity. -->
     <string name="edit_slide_activity">Edit slide</string>
@@ -789,6 +803,9 @@
     <!-- Enable emojis -->
     <string name="pref_title_enable_emojis">Emoji support</string>
     <string name="pref_summary_enable_emojis">Enable support for unicode emojis, a set of 471 nice emoticons</string>
+
+    <!-- In message list items, this string builds the timestamp line when the message is in a group [CHAR LIMIT=NONE] -->
+    <string name="message_timestamp_format"><xliff:g id="string" example="Fred Flinstone">%1$s</xliff:g>\u0020-\u0020<xliff:g id="string" example="9:39AM">%2$s</xliff:g></string>
 
 </resources>
 

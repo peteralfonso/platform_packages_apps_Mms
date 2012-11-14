@@ -56,6 +56,7 @@
     <string name="insufficient_drm_rights" msgid="6989074725969164383">"Недастаткова правоў DRM."</string>
     <string name="copy_message_text" msgid="4296252229544252834">"Капіяваць тэкст"</string>
     <string name="message_options" msgid="6838806653341967550">"Параметры паведамлення"</string>
+    <string name="slideshow_options" msgid="3501759384739796431">"Параметры слайд-шоу"</string>
     <string name="done" msgid="7479926268660505871">"Зроблена"</string>
     <string name="move_up" msgid="7307578107431739359">"Перанесці уверх"</string>
     <string name="move_down" msgid="6356509518429479053">"Перанесці ўніз"</string>
@@ -81,6 +82,7 @@
     <string name="remove" msgid="4625444913256213175">"Выдаліць"</string>
     <string name="send" msgid="4589898724889248486">"Адправіць"</string>
     <string name="mms" msgid="1587631213714914559">"MMS"</string>
+    <string name="send_mms" msgid="2933162044872550662">"Адправіць MMS"</string>
     <string name="all_threads" msgid="2663426830306307194">"Усе галіны"</string>
     <string name="type_to_compose_text_enter_to_send" msgid="3539985471008581265">"Увесці паведамленне"</string>
     <string name="open_keyboard_to_compose_message" msgid="7860109685511253191">"Адкрыць клавіятуру, каб увесці паведамленне"</string>
@@ -104,7 +106,6 @@
     <string name="cannot_send_message_reason" msgid="8745080126044054343">"У вашага паведамлення няма сапраўдных атрымальнікаў."</string>
     <string name="cannot_forward_drm_obj" msgid="5047623751430559077">"Нельга перанакiраваць аб\'ект DRM з паведамлення."</string>
     <string name="converting_to_picture_message" msgid="2980023239017588627">"Пераўтварэнне ў мультымедыйнае паведамленне..."</string>
-    <string name="converting_to_text_message" msgid="6374423235426015422">"Пераўтварэнне ў тэкставае паведамленне..."</string>
     <string name="cannot_add_slide_anymore" msgid="4631404749618820994">"Не атрымліваецца дадаць слайды."</string>
     <string name="cannot_add_picture_and_video" msgid="4954353772391381447">"Немагчыма дадаць відэа і фатаграфію ў адзін слайд."</string>
     <string name="cannot_save_message" msgid="3375907366965264446">"Немагчыма захаваць паведамленне."</string>
@@ -161,8 +162,10 @@
     <string name="pref_summary_sms_delivery_reports" msgid="5852207702358546129">"Запытаць справаздачу аб дастаўцы для кожнага паведамлення, адпраўленага вамі"</string>
     <string name="pref_summary_auto_delete" msgid="7719538116486177613">"Выдаляць старыя паведамленні пасля дасягнення абмежавання"</string>
     <string name="pref_summary_delete_limit" msgid="597128041393045216">"Паведамленняў у размове: <xliff:g id="COUNT">%1$s</xliff:g>"</string>
+    <string name="pref_summary_mms_group_mms" msgid="2266928687440696745">"Выкарыстоўвайце MMS для адпраўкі аднаго паведамлення пры наяўнасці некалькіх атрымальнікаў"</string>
     <string name="pref_title_manage_sim_messages" msgid="7820895261757881177">"Кiраванне паведамленнямі на SIM-карце"</string>
     <string name="pref_title_mms_delivery_reports" msgid="6666857926679451910">"Справаздачы аб дастаўцы"</string>
+    <string name="pref_title_mms_group_mms" msgid="1251698526583908432">"Групавыя паведамленні"</string>
     <string name="pref_title_mms_read_reports" msgid="4882179829495828541">"Справаздачы аб прачытанні"</string>
     <string name="pref_title_sms_delivery_reports" msgid="876064208254451038">"Справаздачы аб дастаўцы"</string>
     <string name="pref_title_auto_delete" msgid="7227835692631701134">"Выдаліць старыя паведамленні"</string>
@@ -286,6 +289,7 @@
     <string name="saved_ringtone" msgid="3847363932276708626">"Рынгтон захаваны."</string>
     <string name="saved_ringtone_fail" msgid="4778500070919251116">"Немагчыма захаваць мелодыю."</string>
     <string name="menu_insert_smiley" msgid="4964504393061025071">"Уставіць смайлік"</string>
+    <string name="menu_group_participants" msgid="4288356090262299071">"Удзельнікi групы"</string>
     <string name="select_link_title" msgid="3371818607625768447">"Выберыце дзеянне"</string>
     <string name="slide_number" msgid="1923958526266726635">"Слайд <xliff:g id="NUMBER">%s</xliff:g>"</string>
   <plurals name="slide_duration">
@@ -297,6 +301,7 @@
     <string name="storage_limits_activity" msgid="8810530813311077716">"Абмежаваннi сховішча"</string>
     <string name="change_duration_activity" msgid="7048606979485031693">"Змяніць працягласць"</string>
     <string name="edit_slideshow_activity" msgid="8751493388760050529">"Рэдагаваць слайд-шоу"</string>
+    <string name="recipient_list_activity" msgid="1254938236543727019">"Удзельнікi групы"</string>
     <string name="edit_slide_activity" msgid="8752829671778696983">"Рэдагаваць слайд"</string>
     <string name="slideshow_activity" msgid="5658249461317434432">"Слайд-шоу"</string>
     <string name="class_0_message_activity" msgid="6631339964159861048">"Паведамленне класа 0"</string>
@@ -343,4 +348,5 @@
     <string name="attachment_picture" msgid="3709286281567284296">"Выява"</string>
     <string name="notification_separator" msgid="2334673105226536422">"  "</string>
     <string name="enumeration_comma" msgid="213598026698964628">", "</string>
+    <string name="message_timestamp_format" msgid="4188999027493614617">"<xliff:g id="STRING_0">%1$s</xliff:g>—<xliff:g id="STRING_1">%2$s</xliff:g>"</string>
 </resources>

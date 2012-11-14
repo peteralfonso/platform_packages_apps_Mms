@@ -16,8 +16,6 @@
 
 package com.android.mms.transaction;
 
-import com.android.mms.R;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -26,6 +24,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.provider.Telephony;
+
+import com.android.mms.R;
 import com.android.mms.ui.ConversationList;
 
 
@@ -39,8 +39,8 @@ public class SmsRejectedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (Settings.Secure.getInt(context.getContentResolver(),
-                Settings.Secure.DEVICE_PROVISIONED, 0) == 1 &&
+        if (Settings.Global.getInt(context.getContentResolver(),
+                Settings.Global.DEVICE_PROVISIONED, 0) == 1 &&
                 Telephony.Sms.Intents.SMS_REJECTED_ACTION.equals(intent.getAction())) {
 
             int reason = intent.getIntExtra("result", -1);

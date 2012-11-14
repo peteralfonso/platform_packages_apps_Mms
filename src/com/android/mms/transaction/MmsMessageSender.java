@@ -17,7 +17,20 @@
 
 package com.android.mms.transaction;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.preference.PreferenceManager;
+import android.provider.Telephony.Mms;
+import android.provider.Telephony.MmsSms;
+import android.provider.Telephony.MmsSms.PendingMessages;
+import android.util.Log;
+
 import com.android.mms.LogTag;
+import com.android.mms.ui.ComposeMessageActivity;
 import com.android.mms.ui.MessagingPreferenceActivity;
 import com.android.mms.util.SendingProgressTokenManager;
 import com.google.android.mms.InvalidHeaderValueException;
@@ -29,20 +42,6 @@ import com.google.android.mms.pdu.PduPersister;
 import com.google.android.mms.pdu.ReadRecInd;
 import com.google.android.mms.pdu.SendReq;
 import com.google.android.mms.util.SqliteWrapper;
-
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
-import android.preference.PreferenceManager;
-import android.provider.Telephony.Mms;
-import android.provider.Telephony.MmsSms;
-import android.provider.Telephony.Sms;
-import android.provider.Telephony.Mms.Addr;
-import android.provider.Telephony.MmsSms.PendingMessages;
-import android.util.Log;
 
 public class MmsMessageSender implements MessageSender {
     private static final String TAG = "MmsMessageSender";
@@ -163,7 +162,8 @@ public class MmsMessageSender implements MessageSender {
 
             readRec.setDate(System.currentTimeMillis() / 1000);
 
-            PduPersister.getPduPersister(context).persist(readRec, Mms.Outbox.CONTENT_URI);
+            PduPersister.getPduPersister(context).persist(readRec, Mms.Outbox.CONTENT_URI, true,
+                    MessagingPreferenceActivity.getIsGroupMmsEnabled(context), null);
             context.startService(new Intent(context, TransactionService.class));
         } catch (InvalidHeaderValueException e) {
             Log.e(TAG, "Invalide header value", e);

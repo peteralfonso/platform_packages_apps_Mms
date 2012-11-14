@@ -17,8 +17,10 @@
 
 package com.android.mms.ui;
 
-import com.android.mms.R;
-import com.android.mms.layout.LayoutManager;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -40,10 +42,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
+import com.android.mms.R;
+import com.android.mms.layout.LayoutManager;
 
 /**
  * A basic view to show the contents of a slide.
@@ -245,6 +245,8 @@ public class SlideView extends AbsoluteLayout implements
         }
         mTextView.setVisibility(View.VISIBLE);
         mTextView.setText(text);
+        // Let the text in Mms can be selected.
+        mTextView.setTextIsSelectable(true);
     }
 
     public void setTextRegion(int left, int top, int width, int height) {
@@ -472,7 +474,8 @@ public class SlideView extends AbsoluteLayout implements
                 protected void onScrollChanged(int l, int t, int oldl, int oldt) {
                     // Shows MediaController when the view is scrolled to the top/bottom of itself.
                     if (t == 0 || t >= mBottomY){
-                        if (mMediaController != null) {
+                        if (mMediaController != null
+                                && !((SlideshowActivity) mContext).isFinishing()) {
                             mMediaController.show();
                         }
                     }
